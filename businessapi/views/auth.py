@@ -32,7 +32,6 @@ def register_user(request):
         email=request.data["email"],
         first_name=request.data["first_name"],
         last_name=request.data["last_name"],
-        address=request.data["address"],
         phone_number=request.data["phone_number"],
         image=request.data["image"],
         uid=request.data["uid"],
