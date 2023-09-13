@@ -1,9 +1,10 @@
 """View module for handling requests about businesss"""
 from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from businessapi.models import Business, BusinessType, User
+from businessapi.models import Business, BusinessType, User, FavBusiness
 
 
 class BusinessView(ViewSet):
@@ -32,6 +33,12 @@ class BusinessView(ViewSet):
         business_type = request.query_params.get('type', None)
         if business_type is not None:
             businesses = businesses.filter(business_type_id=business_type)
+        serializer = BusinessSerializer(businesses, many=True)
+        uid = request.META['HTTP_AUTHORIZATION']
+        user = User.objects.get(uid=uid)
+        for business in businesses:
+            business.favorited = len(FavBusiness.objects.filter(
+                user=user, business=business)) > 0
         serializer = BusinessSerializer(businesses, many=True)
         return Response(serializer.data)
 
@@ -81,6 +88,27 @@ class BusinessView(ViewSet):
         business.delete()
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=True, methods=['post'])
+    def favorite(self, request, pk=None):
+        """Favorite a item."""
+        business = Business.objects.get(pk=pk)
+        user = User.objects.get(uid=request.META['HTTP_AUTHORIZATION'])
+
+        favorited = FavBusiness.objects.create(business=business, user=user)
+        return Response({'message': 'item favorited successfully!'}, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['delete'])
+    def unfavorite(self, request, pk=None):
+        """Unfavorite a item."""
+        business = Business.objects.get(pk=pk)
+        user = User.objects.get(uid=request.META['HTTP_AUTHORIZATION'])
+        print(business, user)
+
+        favorited = FavBusiness.objects.get(business=business, user=user)
+
+        favorited.delete()
+        return Response({'message': 'item unfavorited successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
 
 class BusinessSerializer(serializers.ModelSerializer):
     """JSON serializer for businesss
@@ -88,5 +116,5 @@ class BusinessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Business
         fields = ('id', "business_type", "name", "pitch", "user",
-                  "area", "cost")
+                  "area", "cost", "favorited")
         depth = 1

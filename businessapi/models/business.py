@@ -12,3 +12,12 @@ class Business(models.Model):
     cost = models.CharField(max_length=10)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     uid = models.CharField(max_length=50)
+
+    @property
+    def favorited(self):
+        """custom property to add favorite to a product"""
+        return self.__favorited
+
+    @favorited.setter
+    def favorited(self, value):
+        self.__favorited = value
