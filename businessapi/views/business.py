@@ -30,15 +30,18 @@ class BusinessView(ViewSet):
         """
 
         businesses = Business.objects.all()
+
         business_type = request.query_params.get('type', None)
         if business_type is not None:
-            businesses = businesses.filter(business_type_id=business_type)
-        serializer = BusinessSerializer(businesses, many=True)
+            businesses = businesses.filter(business_type=business_type)
+
         uid = request.META['HTTP_AUTHORIZATION']
         user = User.objects.get(uid=uid)
+
         for business in businesses:
             business.favorited = len(FavBusiness.objects.filter(
                 user=user, business=business)) > 0
+
         serializer = BusinessSerializer(businesses, many=True)
         return Response(serializer.data)
 
@@ -108,6 +111,13 @@ class BusinessView(ViewSet):
 
         favorited.delete()
         return Response({'message': 'item unfavorited successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
+
+# class FavoriteSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = FavBusiness
+#         fields = ('id', 'user', 'business')
+#         depth = 1
 
 
 class BusinessSerializer(serializers.ModelSerializer):
