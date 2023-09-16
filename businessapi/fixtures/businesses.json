@@ -8,8 +8,7 @@
             "pitch": "We come to you, relax at home while we detail your ride",
             "area": "wherever you are",
             "cost": "$150-800",
-            "user": 1,
-            "uid": 1
+            "user": 1
         }
     },
     {
@@ -21,8 +20,7 @@
             "pitch": "Coffee from the soul to the heart",
             "area": "Franklin",
             "cost": "$50,000",
-            "user": 2,
-            "uid": 2
+            "user": 2
         }
     }
 ]
