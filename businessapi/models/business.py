@@ -11,7 +11,7 @@ class Business(models.Model):
     area = models.CharField(max_length=100)
     cost = models.CharField(max_length=10)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    uid = models.CharField(max_length=50)
+    uid = models.CharField(max_length=100)
 
     @property
     def favorited(self):
